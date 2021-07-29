@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: AJMFactsheets <AJMFactsheets@gmail.com>
+Date: Fri, 17 Jan 2020 17:17:54 -0600
+Subject: [PATCH] Allow using Mojang item optimizations.
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+index bf704993d0abd50dba91682a7fbb575e3696be62..822e07b9261ce2a36acbddc17886e24cf1ccf693 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
+@@ -471,6 +471,11 @@ public class PaperWorldConfig {
+         entitiesTargetWithFollowRange = getBoolean("entities-target-with-follow-range", entitiesTargetWithFollowRange);
+     }
+ 
++    public boolean useMojangItemOptimizations = false;
++    private void useMojangItemOptimizations(){
++        useMojangItemOptimizations = getBoolean("use-mojang-item-optimizations", useMojangItemOptimizations);
++    }
++
+     public boolean cooldownHopperWhenFull = true;
+     public boolean disableHopperMoveEvents = false;
+     private void hopperOptimizations() {
+diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+index 82ffe3624943d2e931e2cc2f85ede94f369bd06b..b3715cbb8bba91a6a3e028e2b8b18ef88a6de23c 100644
+--- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
+@@ -135,7 +135,7 @@ public class ItemEntity extends Entity {
+                 }
+             }
+ 
+-            if (!this.onGround || this.getDeltaMovement().horizontalDistanceSqr() > 9.999999747378752E-6D || (this.tickCount + this.getId()) % 4 == 0) {
++            if (!this.onGround || this.getDeltaMovement().horizontalDistanceSqr() > 9.999999747378752E-6D || (this.level.paperConfig.useMojangItemOptimizations ? this.tickCount + this.getId() : this.tickCount) % 4 == 0) { // Paper - Ensure checking item movement is always offset from Spigot's entity activation range check
+                 this.move(MoverType.SELF, this.getDeltaMovement());
+                 float f1 = 0.98F;
+ 
+diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
+index 84ce3d38d5decb4a2f9fae78e0ef5d715860dc7d..9f4cc8f625914745c274c6f3b0979518c01c2dda 100644
+--- a/src/main/java/org/spigotmc/ActivationRange.java
++++ b/src/main/java/org/spigotmc/ActivationRange.java
+@@ -245,7 +245,8 @@ public class ActivationRange
+             // Add a little performance juice to active entities. Skip 1/4 if not immune.
+         } else if ( !entity.defaultActivationState && entity.tickCount % 4 == 0 && !ActivationRange.checkEntityImmunities( entity ) )
+         {
+-            isActive = false;
++            if(!(entity instanceof net.minecraft.world.entity.item.ItemEntity && entity.level.paperConfig.useMojangItemOptimizations)) // Paper - Prevent skipping if mojang item optimizations are used.
++                isActive = false;
+         }
+         return isActive;
+     }

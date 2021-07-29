@@ -25,10 +25,10 @@ index fe79c0add4f7cb18d487c5bb9415c40c5b551ea2..8d9ddad1879e7616d980ca70de8aecac
          poiUnload = Timings.ofSafe(name + "Chunk unload - POI");
          chunkUnload = Timings.ofSafe(name + "Chunk unload - Chunk");
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 31f192773fe5159ed2109f0d367e6b7287ffd186..f2e4939c8144b9bc7441130302ab3e2358c42063 100644
+index 5febcca6e7050dbb72f10a0e3e23391d4b82fa34..65f7ea01e6b6a5c1f5d4ffee189b938772169362 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -574,5 +574,10 @@ public class PaperWorldConfig {
+@@ -579,5 +579,10 @@ public class PaperWorldConfig {
              Bukkit.getLogger().warning("You have enabled permission-based Anti-Xray checking - depending on your permission plugin, this may cause performance issues");
          }
      }

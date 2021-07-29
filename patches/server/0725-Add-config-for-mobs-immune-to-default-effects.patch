@@ -5,10 +5,10 @@ Subject: [PATCH] Add config for mobs immune to default effects
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index b8a2406d847051442485691c91dcd82d40258424..6ff53e138ea17c3e8283a52251c81d5cdf91ebac 100644
+index add7e0d0ccf4f89fd94fb654d7554f045d3921d6..9899aa2640b802a3762015434555641e161fe317 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -650,6 +650,21 @@ public class PaperWorldConfig {
+@@ -655,6 +655,21 @@ public class PaperWorldConfig {
          log("Hopper Move Item Events: " + (disableHopperMoveEvents ? "disabled" : "enabled"));
      }
  

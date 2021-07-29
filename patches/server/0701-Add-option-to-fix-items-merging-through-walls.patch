@@ -5,10 +5,10 @@ Subject: [PATCH] Add option to fix items merging through walls
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index c0e733d839f4c86bdcd6e1ca0b40b082fc6eb86e..579bd433e1f680c2273cd048b304c1276016e6cc 100644
+index dba9b244a01d92258dac942d914bc8d51a2d1e93..ede04a63e3fbd6fab0b401db4211eae618f0a323 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -799,5 +799,10 @@ public class PaperWorldConfig {
+@@ -804,5 +804,10 @@ public class PaperWorldConfig {
      private void mapItemFrameCursorLimit() {
          mapItemFrameCursorLimit = getInt("map-item-frame-cursor-limit", mapItemFrameCursorLimit);
      }
@@ -20,7 +20,7 @@ index c0e733d839f4c86bdcd6e1ca0b40b082fc6eb86e..579bd433e1f680c2273cd048b304c127
  }
  
 diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-index e0c13a112c95eed9867d4608e18dc797b0c9c9cf..158719d46c96bb733a00e08c8285f41a48406abf 100644
+index 0dcea71283129612ddd16871273a50df6cc8533c..0477ad4c4adb6bbe1cb5b8f54c7e0627175c1aed 100644
 --- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 @@ -241,6 +241,14 @@ public class ItemEntity extends Entity {

@@ -28,7 +28,7 @@ index b9cdbf8acccfd6b207a0116f068168f3b8c8e17d..e873b23527cc4e56580c3c7dc5b52ecc
       * Get a named timer for the specified tile entity type to track type specific timings.
       * @param entity
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 0e7d29dbbdb862dd5876adee26fbba02267e5276..c334f29c69c1e6e3fe55cd6695e7df400cf36058 100644
+index f6a66b41fa7b4babf14d14cccd9960efc7e7eeb2..3797a41238df2e3e91f3aa73b91248c696819892 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 @@ -3,14 +3,19 @@ package com.destroystokyo.paper;
@@ -51,7 +51,7 @@ index 0e7d29dbbdb862dd5876adee26fbba02267e5276..c334f29c69c1e6e3fe55cd6695e7df40
  import org.bukkit.configuration.file.YamlConfiguration;
  import org.spigotmc.SpigotWorldConfig;
  
-@@ -847,5 +852,58 @@ public class PaperWorldConfig {
+@@ -852,5 +857,58 @@ public class PaperWorldConfig {
      private void playerCrammingDamage() {
          allowPlayerCrammingDamage = getBoolean("allow-player-cramming-damage", allowPlayerCrammingDamage);
      }
@@ -111,7 +111,7 @@ index 0e7d29dbbdb862dd5876adee26fbba02267e5276..c334f29c69c1e6e3fe55cd6695e7df40
  }
  
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
-index 0982ff2bac359fe10d55c12f7c7cdcf69ae6bf57..0610a0f587d012f15f264513b308e92cc62b5991 100644
+index b1212e162ba938b3abe0df747a633ba9cbbe57c8..b1928807851a4fca53e117573b25c62a6deeb8e1 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
 @@ -14,6 +14,10 @@ public abstract class Behavior<E extends LivingEntity> {
@@ -183,7 +183,7 @@ index 0982ff2bac359fe10d55c12f7c7cdcf69ae6bf57..0610a0f587d012f15f264513b308e92c
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
-index f8bdebe49704a7d8acad17acca1698fa3a11a3c9..e679eddd8d6e1a0355cb2d4996409d25288010e6 100644
+index f94aa5147c52d2e36d6018f51b85e9dac7a6208a..8f99a78a55ab8f0ddfa1dd790a9a4a8c23a7f841 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
 @@ -19,8 +19,28 @@ public abstract class Sensor<E extends LivingEntity> {

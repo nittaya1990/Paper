@@ -6,10 +6,10 @@ Subject: [PATCH] add per world spawn limits
 Taken from #2982. Credit to Chasewhip8
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 97a1ca789eb606b263ebabad188baefe4df69b85..435558eb9f3ce277c14ff5e368d489d1df4da8e1 100644
+index 1b9a2ded6c72632d7180fa650f86d8281627ded7..e2866b634b8a673fb5b6c3d7e0bfab00eb3f38a7 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -660,6 +660,19 @@ public class PaperWorldConfig {
+@@ -665,6 +665,19 @@ public class PaperWorldConfig {
          zombieVillagerInfectionChance = getDouble("zombie-villager-infection-chance", zombieVillagerInfectionChance);
      }
  

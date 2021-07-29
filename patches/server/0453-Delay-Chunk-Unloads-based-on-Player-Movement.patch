@@ -17,10 +17,10 @@ This allows servers with smaller worlds who do less long distance exploring to s
 wasting cpu cycles on saving/unloading/reloading chunks repeatedly.
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index b6742a4ef1a798e60289586f5cccf6886afa360a..9e5810eb0085ad956f0bd1cd69fa88909d9d638a 100644
+index 423e32de3ddd31d10a883ed1ba0b70f8cdd68e47..549328f234a812fec01fbfd8e41ae2a8bdc50f04 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -531,6 +531,15 @@ public class PaperWorldConfig {
+@@ -536,6 +536,15 @@ public class PaperWorldConfig {
          this.noTickViewDistance = this.getInt("viewdistances.no-tick-view-distance", -1);
      }
  

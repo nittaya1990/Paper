@@ -11,10 +11,10 @@ It does not make a lot of sense to damage players if they get crammed,
 For those who really want it a config option is provided.
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 6ff53e138ea17c3e8283a52251c81d5cdf91ebac..0e7d29dbbdb862dd5876adee26fbba02267e5276 100644
+index 9899aa2640b802a3762015434555641e161fe317..f6a66b41fa7b4babf14d14cccd9960efc7e7eeb2 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -842,5 +842,10 @@ public class PaperWorldConfig {
+@@ -847,5 +847,10 @@ public class PaperWorldConfig {
      private void showSignClickCommandFailureMessagesToPlayer() {
          showSignClickCommandFailureMessagesToPlayer = getBoolean("show-sign-click-command-failure-msgs-to-player", showSignClickCommandFailureMessagesToPlayer);
      }

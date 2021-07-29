@@ -5,10 +5,10 @@ Subject: [PATCH] MC-29274: Fix Wither hostility towards players
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index 0eba516110b82d917c3374a9fe5bbf337b83fad6..20eb4aea24cc6699747b18b2c00e5b01dafb47c6 100644
+index 80b524f8ee2eec0fa8c835dcce58e88135b7d914..57ba05d0f9aba9d4a637581374928ad2dd8b49f4 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -764,5 +764,11 @@ public class PaperWorldConfig {
+@@ -769,5 +769,11 @@ public class PaperWorldConfig {
      private void setUpdatePathfindingOnBlockUpdate() {
          updatePathfindingOnBlockUpdate = getBoolean("update-pathfinding-on-block-update", this.updatePathfindingOnBlockUpdate);
      }
