@@ -21,7 +21,7 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089d
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a5fc017e1771efd07ae0ef60b3b44a909708928e 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..8c785a636c52a92e6b78fe7bf380333f6f99f3ec 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3041,6 +3041,26 @@ public abstract class LivingEntity extends Entity {
@@ -38,7 +38,7 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a5fc017e1771efd07ae0ef60b3b44a90
 +                    displayTag.remove("Lore");
 +                    displayTag.remove("Name");
 +                }
-+                if(nbt.get("Enchantments") instanceof ListTag enchantmentsTag && enchantmentsTag.size() != 0) {
++                if(nbt.get("Enchantments") instanceof ListTag enchantmentsTag && !enchantmentsTag.isEmpty()) {
 +                    // The client still renders items with the enchantment glow if the enchantments tag contains at least one (empty) child.
 +                    ListTag enchantments = new ListTag();
 +                    enchantments.add(new CompoundTag());
