@@ -21,10 +21,10 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089d
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..aaf39b833485db0af4cfea396b2afe2219b9c7f9 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..8ebba278bba8987ee64263d256119c99e10db827 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3041,6 +3041,35 @@ public abstract class LivingEntity extends Entity {
+@@ -3041,6 +3041,36 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
@@ -36,8 +36,9 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..aaf39b833485db0af4cfea396b2afe22
 +
 +                CompoundTag newNbt = new CompoundTag();
 +
-+                if (oldNbt.contains("CustomModelData"))
++                if (oldNbt.contains("CustomModelData")) {
 +                    newNbt.put("CustomModelData", oldNbt.get("CustomModelData"));
++                }
 +
 +                // Colors for leather helmets.
 +                if (oldNbt.get("display") instanceof CompoundTag oldDisplay && oldDisplay.contains("color")) {
