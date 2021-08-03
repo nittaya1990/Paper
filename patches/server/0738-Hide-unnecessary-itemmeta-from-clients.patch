@@ -21,7 +21,7 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089d
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..ecec7a4b2e6551d4ac17635a6aa2f54012be90f0 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a5fc017e1771efd07ae0ef60b3b44a909708928e 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3041,6 +3041,26 @@ public abstract class LivingEntity extends Entity {
@@ -34,11 +34,11 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..ecec7a4b2e6551d4ac17635a6aa2f540
 +                itemstack1.setCount(1);
 +                itemstack1.setDamageValue(0);
 +                // We can't just strip out display, leather helmets still use the display.color tag.
-+                if(nbt.get("display") instanceof CompoundTag) {
-+                    nbt.getCompound("display").remove("Lore");
-+                    nbt.getCompound("display").remove("Name");
++                if(nbt.get("display") instanceof CompoundTag displayTag) {
++                    displayTag.remove("Lore");
++                    displayTag.remove("Name");
 +                }
-+                if(nbt.get("Enchantments") instanceof ListTag && ((ListTag) nbt.get("Enchantments")).size() != 0) {
++                if(nbt.get("Enchantments") instanceof ListTag enchantmentsTag && enchantmentsTag.size() != 0) {
 +                    // The client still renders items with the enchantment glow if the enchantments tag contains at least one (empty) child.
 +                    ListTag enchantments = new ListTag();
 +                    enchantments.add(new CompoundTag());
