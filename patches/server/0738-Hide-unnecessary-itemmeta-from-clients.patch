@@ -21,20 +21,21 @@ index 95d8cf449bf0439fddaf319246fef51e1570b68e..2a67e33dbe802518bf7fbe500df8dad5
      private static void namedEntityDeaths() {
          logNamedEntityDeaths = getBoolean("settings.log-named-entity-deaths", logNamedEntityDeaths);
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..189d9468d30b65cef8713c9f02b5daad4be2d6b3 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..adbf9fb7eaeeaf233b0c8c922409b21db0206cdc 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -1,5 +1,6 @@
  package net.minecraft.world.entity;
  
-+import com.destroystokyo.paper.PaperConfig;
++import com.destroystokyo.paper.PaperConfig; // Paper
  import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent; // Paper
  import com.google.common.base.Objects;
  import com.google.common.collect.ImmutableList;
-@@ -3041,6 +3042,24 @@ public abstract class LivingEntity extends Entity {
+@@ -3041,6 +3042,26 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
++            // Paper start - hide unnecessary itemmeta from clients.
 +            if(itemstack1.getTag() != null && PaperConfig.hideItemmetaFromClients) {
 +                CompoundTag nbt = itemstack1.getTag();
 +                itemstack1.setCount(1);
@@ -52,6 +53,7 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..189d9468d30b65cef8713c9f02b5daad
 +                }
 +                nbt.remove("AttributeModifiers");
 +            }
++            // Paper end.
 +
              list.add(Pair.of(enumitemslot, itemstack1));
              switch (enumitemslot.getType()) {
