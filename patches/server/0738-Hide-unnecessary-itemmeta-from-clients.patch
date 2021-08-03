@@ -1,0 +1,58 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Noah van der Aa <ndvdaa@gmail.com>
+Date: Tue, 3 Aug 2021 17:28:27 +0200
+Subject: [PATCH] Hide unnecessary itemmeta from clients.
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+index 95d8cf449bf0439fddaf319246fef51e1570b68e..2a67e33dbe802518bf7fbe500df8dad550d3bfb8 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+@@ -501,6 +501,11 @@ public class PaperConfig {
+         deobfuscateStacktraces = getBoolean("settings.loggers.deobfuscate-stacktraces", deobfuscateStacktraces);
+     }
+ 
++    public static boolean hideItemmetaFromClients = false;
++    private static void getHideItemmetaFromClients() {
++        hideItemmetaFromClients = getBoolean("settings.hide-itemmeta-from-clients", hideItemmetaFromClients);
++    }
++
+     public static boolean logNamedEntityDeaths = true;
+     private static void namedEntityDeaths() {
+         logNamedEntityDeaths = getBoolean("settings.log-named-entity-deaths", logNamedEntityDeaths);
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..189d9468d30b65cef8713c9f02b5daad4be2d6b3 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.world.entity;
+ 
++import com.destroystokyo.paper.PaperConfig;
+ import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent; // Paper
+ import com.google.common.base.Objects;
+ import com.google.common.collect.ImmutableList;
+@@ -3041,6 +3042,24 @@ public abstract class LivingEntity extends Entity {
+         equipment.forEach((enumitemslot, itemstack) -> {
+             ItemStack itemstack1 = itemstack.copy();
+ 
++            if(itemstack1.getTag() != null && PaperConfig.hideItemmetaFromClients) {
++                CompoundTag nbt = itemstack1.getTag();
++                itemstack1.setCount(1);
++                itemstack1.setDamageValue(0);
++                // We can't just strip out display, leather helmets still use the display.color tag.
++                if(nbt.get("display") != null) {
++                    nbt.getCompound("display").remove("Lore");
++                    nbt.getCompound("display").remove("Name");
++                }
++                if(nbt.get("Enchantments") != null) {
++                    // The client still renders items with the enchantment glow if the enchantments tag contains at least one (empty) child.
++                    ListTag enchantments = new ListTag();
++                    enchantments.add(new CompoundTag());
++                    nbt.put("Enchantments", enchantments);
++                }
++                nbt.remove("AttributeModifiers");
++            }
++
+             list.add(Pair.of(enumitemslot, itemstack1));
+             switch (enumitemslot.getType()) {
+                 case HAND:
