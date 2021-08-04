@@ -21,10 +21,10 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..2f3a66c1b652b059bfb3cf0b421dfe98
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..8ebba278bba8987ee64263d256119c99e10db827 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..62411159a25247395bc48fc48384b6590349768f 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3041,6 +3041,36 @@ public abstract class LivingEntity extends Entity {
+@@ -3041,6 +3041,41 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
@@ -52,6 +52,11 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..8ebba278bba8987ee64263d256119c99
 +                    ListTag enchantments = new ListTag();
 +                    enchantments.add(new CompoundTag());
 +                    newNbt.put("Enchantments", enchantments);
++                }
++
++                // SkullOwner for custom skulls.
++                if (oldNbt.contains("SkullOwner")) {
++                    newNbt.put("SkullOwner", oldNbt.get("SkullOwner"));
 +                }
 +
 +                itemstack1.setTag(newNbt);
