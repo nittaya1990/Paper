@@ -5,14 +5,14 @@ Subject: [PATCH] Hide unnecessary itemmeta from clients.
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089ddf2e0e5b 100644
+index c334f29c69c1e6e3fe55cd6695e7df400cf36058..2f3a66c1b652b059bfb3cf0b421dfe98c9f96204 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 @@ -863,6 +863,11 @@ public class PaperWorldConfig {
          behaviorTickRates = loadTickRates("behavior");
      }
  
-+    public boolean hideItemmetaFromClients = false;
++    public boolean hideItemmetaFromClients = true;
 +    private void getHideItemmetaFromClients() {
 +        hideItemmetaFromClients = getBoolean("hide-itemmeta-from-clients", hideItemmetaFromClients);
 +    }
