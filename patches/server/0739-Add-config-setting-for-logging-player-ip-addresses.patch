@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Noah van der Aa <ndvdaa@gmail.com>
+Date: Fri, 6 Aug 2021 11:14:09 +0200
+Subject: [PATCH] Add config setting for logging player ip addresses.
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/PaperConfig.java b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+index 95d8cf449bf0439fddaf319246fef51e1570b68e..1030b4c2bcdd17ec74619349a8f941ea3cc9262e 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperConfig.java
++++ b/src/main/java/com/destroystokyo/paper/PaperConfig.java
+@@ -506,6 +506,11 @@ public class PaperConfig {
+         logNamedEntityDeaths = getBoolean("settings.log-named-entity-deaths", logNamedEntityDeaths);
+     }
+ 
++    public static boolean logPlayerIpAddresses = true;
++    private static void playerIpAddresses() {
++        logPlayerIpAddresses = getBoolean("settings.log-player-ip-addresses", logPlayerIpAddresses);
++    }
++
+     public static int itemValidationDisplayNameLength = 8192;
+     public static int itemValidationLocNameLength = 8192;
+     public static int itemValidationLoreLineLength = 8192;
+diff --git a/src/main/java/net/minecraft/network/protocol/PacketUtils.java b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
+index bcf53ec07b8eeec7a88fb67e6fb908362e6f51b0..335756e9b1f552ebe2873f49ee43cb4c91ea83db 100644
+--- a/src/main/java/net/minecraft/network/protocol/PacketUtils.java
++++ b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
+@@ -38,10 +38,11 @@ public class PacketUtils {
+                     // Paper start
+                     catch (Exception e) {
+                         Connection networkmanager = listener.getConnection();
++                        String playerIP = com.destroystokyo.paper.PaperConfig.logPlayerIpAddresses ? String.valueOf(networkmanager.getRemoteAddress()) : ""; // Paper
+                         if (networkmanager.getPlayer() != null) {
+-                            LOGGER.error("Error whilst processing packet {} for {}[{}]", packet, networkmanager.getPlayer().getScoreboardName(), networkmanager.getRemoteAddress(), e);
++                            LOGGER.error("Error whilst processing packet {} for {}{}", packet, networkmanager.getPlayer().getScoreboardName(), playerIP.isEmpty() ? "" : "[" + playerIP + "]", e); // Paper
+                         } else {
+-                            LOGGER.error("Error whilst processing packet {} for connection from {}", packet, networkmanager.getRemoteAddress(), e);
++                            LOGGER.error("Error whilst processing packet {} for connection from {}", packet, playerIP, e); // Paper
+                         }
+                         TextComponent error = new TextComponent("Packet processing error");
+                         networkmanager.send(new ClientboundDisconnectPacket(error), (future) -> {
+diff --git a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+index 961660f6f9e00b93252519e38b74c66c53388ed2..01da5acacb0bbe73578760c9bf8158b9d0f1c8da 100644
+--- a/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
++++ b/src/main/java/net/minecraft/server/network/ServerConnectionListener.java
+@@ -199,7 +199,7 @@ public class ServerConnectionListener {
+                                 throw new ReportedException(CrashReport.forThrowable(exception, "Ticking memory connection"));
+                             }
+ 
+-                            ServerConnectionListener.LOGGER.warn("Failed to handle packet for {}", networkmanager.getRemoteAddress(), exception);
++                            ServerConnectionListener.LOGGER.warn("Failed to handle packet for {}", com.destroystokyo.paper.PaperConfig.logPlayerIpAddresses ? networkmanager.getRemoteAddress() : "", exception);
+                             TextComponent chatcomponenttext = new TextComponent("Internal server error");
+ 
+                             networkmanager.send(new ClientboundDisconnectPacket(chatcomponenttext), (future) -> {
+diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index 45e77d96f673ce68cf15ce3d45fd1eeffed4d8d8..b19e7c8bd406686a7296bc1501b38e77bda1f121 100644
+--- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.server.network;
+ 
++import com.destroystokyo.paper.PaperConfig; // Paper
+ import com.destroystokyo.paper.profile.CraftPlayerProfile;
+ import com.destroystokyo.paper.profile.PlayerProfile;
+ import com.mojang.authlib.GameProfile;
+@@ -223,7 +224,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
+     }
+ 
+     public String getUserName() {
+-        return this.gameProfile != null ? this.gameProfile + " (" + this.connection.getRemoteAddress() + ")" : String.valueOf(this.connection.getRemoteAddress());
++        return this.gameProfile != null ? this.gameProfile + "" + (PaperConfig.logPlayerIpAddresses ? " (" + this.connection.getRemoteAddress() + ")" : "") + "" : PaperConfig.logPlayerIpAddresses ? String.valueOf(this.connection.getRemoteAddress()) : ""; // Paper
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 48045993c8ad4b014cf4a67f7c4db42e014d1c81..cd2f979e4c4bd8c62b2597e9696d728e6af8416d 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -483,7 +483,14 @@ public abstract class PlayerList {
+         }
+         // Paper end
+         // CraftBukkit - Moved from above, added world
+-        PlayerList.LOGGER.info("{}[{}] logged in with entity id {} at ([{}]{}, {}, {})", player.getName().getString(), s1, player.getId(), worldserver1.serverLevelData.getLevelName(), player.getX(), player.getY(), player.getZ());
++
++        // Paper start
++        if (!com.destroystokyo.paper.PaperConfig.logPlayerIpAddresses) {
++            s1 = "";
++        }
++        // Paper end
++
++        PlayerList.LOGGER.info("{}{} logged in with entity id {} at ([{}]{}, {}, {})", player.getName().getString(), s1.isEmpty() ? "" : "[" + s1 + "]", player.getId(), worldserver1.serverLevelData.getLevelName(), player.getX(), player.getY(), player.getZ()); // Paper
+     }
+ 
+     public void updateEntireScoreboard(ServerScoreboard scoreboard, ServerPlayer player) {
