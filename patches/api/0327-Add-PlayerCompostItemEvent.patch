@@ -1,0 +1,112 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Noah van der Aa <ndvdaa@gmail.com>
+Date: Sat, 7 Aug 2021 15:11:27 +0200
+Subject: [PATCH] Add PlayerCompostItemEvent.
+
+
+diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..038c6eb7d7966c3a84c51f9aebf630eb040f1394
+--- /dev/null
++++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java
+@@ -0,0 +1,100 @@
++package com.destroystokyo.paper.event.player;
++
++import org.bukkit.block.Block;
++import org.bukkit.entity.Player;
++import org.bukkit.event.Cancellable;
++import org.bukkit.event.HandlerList;
++import org.bukkit.event.player.PlayerEvent;
++import org.bukkit.inventory.ItemStack;
++import org.jetbrains.annotations.NotNull;
++
++/**
++ * Called when an item is about to be composted by a player.
++ */
++public class PlayerCompostItemEvent extends PlayerEvent implements Cancellable {
++
++    private static final HandlerList HANDLER_LIST = new HandlerList();
++
++    private Block composter;
++    private ItemStack item;
++    private boolean willRaiseLevel;
++    private int level;
++
++    private boolean cancelled;
++
++    public PlayerCompostItemEvent(@NotNull Player who, @NotNull Block composter, @NotNull ItemStack item, boolean willRaiseLevel, int level) {
++        super(who);
++        this.composter = composter;
++        this.item = item;
++        this.willRaiseLevel = willRaiseLevel;
++        this.level = level;
++    }
++
++    /**
++     * Gets the composter that was interacted with.
++     *
++     * @return the composter
++     */
++    @NotNull
++    public Block getComposter() {
++        return this.composter;
++    }
++
++    /**
++     * Gets the item that was used on  the composter.
++     *
++     * @return the item
++     */
++    @NotNull
++    public ItemStack getItem() {
++        return this.item;
++    }
++
++    /**
++     * Gets whether or not the composter will rise a level.
++     *
++     * @return true if successful
++     */
++    public boolean willRaiseLevel() {
++        return this.willRaiseLevel;
++    }
++
++    /**
++     * Sets whether or not the composter will rise a level.
++     *
++     * @param willRaiseLevel true if the composter should rise a level
++     */
++    public void setWillRaiseLevel(boolean willRaiseLevel) {
++        this.willRaiseLevel = willRaiseLevel;
++    }
++
++    /**
++     * Gets the current composter level.
++     *
++     * @return the composter level
++     */
++    public int getLevel() {
++        return this.level;
++    }
++
++    @Override
++    public boolean isCancelled() {
++        return this.cancelled;
++    }
++
++    @Override
++    public void setCancelled(boolean cancel) {
++        this.cancelled = cancel;
++    }
++
++    @Override
++    public @NotNull HandlerList getHandlers() {
++        return HANDLER_LIST;
++    }
++
++    @NotNull
++    public static HandlerList getHandlerList() {
++        return HANDLER_LIST;
++    }
++
++}
