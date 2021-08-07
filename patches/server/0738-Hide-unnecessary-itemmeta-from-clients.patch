@@ -21,14 +21,14 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..2f3a66c1b652b059bfb3cf0b421dfe98
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..48975a3365f66ae90cffe7d8643864aec04938be 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..851fcd3bcfa88839c32e8d708c65279ad419a90f 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -3035,12 +3035,81 @@ public abstract class LivingEntity extends Entity {
  
      }
  
-+    private final List<String> shownNBTTags = java.util.Collections.unmodifiableList(List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion")); // Paper
++    private static final List<String> shownNBTTags = List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion"); // Paper
 +
      private void handleEquipmentChanges(Map<EquipmentSlot, ItemStack> equipment) {
          List<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(equipment.size());
