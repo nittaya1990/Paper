@@ -21,10 +21,18 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..2f3a66c1b652b059bfb3cf0b421dfe98
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..62411159a25247395bc48fc48384b6590349768f 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..48975a3365f66ae90cffe7d8643864aec04938be 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3041,6 +3041,41 @@ public abstract class LivingEntity extends Entity {
+@@ -3035,12 +3035,81 @@ public abstract class LivingEntity extends Entity {
+ 
+     }
+ 
++    private final List<String> shownNBTTags = java.util.Collections.unmodifiableList(List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion")); // Paper
++
+     private void handleEquipmentChanges(Map<EquipmentSlot, ItemStack> equipment) {
+         List<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(equipment.size());
+ 
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
@@ -32,18 +40,24 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..62411159a25247395bc48fc48384b659
 +            if(itemstack1.getTag() != null && this.level.paperConfig.hideItemmetaFromClients) {
 +                CompoundTag oldNbt = itemstack1.getTag();
 +                itemstack1.setCount(1);
-+                itemstack1.setDamageValue(0);
 +
 +                CompoundTag newNbt = new CompoundTag();
 +
-+                if (oldNbt.contains("CustomModelData")) {
-+                    newNbt.put("CustomModelData", oldNbt.get("CustomModelData"));
++                for (String tag : shownNBTTags) {
++                    if (oldNbt.contains(tag)) {
++                        newNbt.put(tag, oldNbt.get(tag));
++                    }
 +                }
 +
-+                // Colors for leather helmets.
-+                if (oldNbt.get("display") instanceof CompoundTag oldDisplay && oldDisplay.contains("color")) {
++                // Colors for leather helmets and maps.
++                if (oldNbt.get("display") instanceof CompoundTag oldDisplay && (oldDisplay.contains("color") || oldDisplay.contains("MapColor"))) {
 +                    CompoundTag display = new CompoundTag();
-+                    display.put("color", oldDisplay.get("color"));
++                    if (oldDisplay.contains("color")) {
++                        display.put("color", oldDisplay.get("color"));
++                    }
++                    if (oldDisplay.contains("MapColor")) {
++                        display.put("MapColor", oldDisplay.get("MapColor"));
++                    }
 +                    newNbt.put("display", display);
 +                }
 +
@@ -54,12 +68,38 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..62411159a25247395bc48fc48384b659
 +                    newNbt.put("Enchantments", enchantments);
 +                }
 +
-+                // SkullOwner for custom skulls.
-+                if (oldNbt.contains("SkullOwner")) {
-+                    newNbt.put("SkullOwner", oldNbt.get("SkullOwner"));
++                // Light levels for light blocks
++                if (oldNbt.get("BlockStateTag") instanceof CompoundTag oldBlockState && oldBlockState.contains("level")) {
++                    CompoundTag blockState = new CompoundTag();
++                    blockState.put("level", oldBlockState.get("level"));
++                    newNbt.put("BlockStateTag", blockState);
++                }
++
++                // Show broken elytras.
++                int damage = 0;
++                if (itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1) {
++                    damage = itemstack1.getDamageValue();
++                }
++
++                // Bundles change their texture based on their fullness.
++                if (itemstack1.is(Items.BUNDLE) && oldNbt.get("Items") instanceof ListTag oldItems && !oldItems.isEmpty())  {
++                    org.bukkit.inventory.meta.BundleMeta bundleMeta = (org.bukkit.inventory.meta.BundleMeta) itemstack1.asBukkitMirror().getItemMeta();
++                    int sizeUsed = 0;
++                    for (org.bukkit.inventory.ItemStack item : bundleMeta.getItems()){
++                        int scale = 64 / item.getMaxStackSize();
++                        sizeUsed += scale * item.getAmount();
++                    }
++                    // Now we add a single fake item that uses the same amount of slots as all other items.
++                    ListTag items = new ListTag();
++                    CompoundTag fakeItem = new CompoundTag();
++                    fakeItem.putInt("Count", sizeUsed);
++                    fakeItem.putString("id", "minecraft:paper");
++                    items.add(fakeItem);
++                    newNbt.put("Items", items);
 +                }
 +
 +                itemstack1.setTag(newNbt);
++                itemstack1.setDamageValue(damage);
 +            }
 +            // Paper end.
 +
