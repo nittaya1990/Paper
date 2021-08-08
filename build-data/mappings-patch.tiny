@@ -63,3 +63,9 @@ c	net/minecraft/world/entity/EntityInsentient	net/minecraft/world/entity/Mob
 # Craftbukkit overloads convertTo in Mob adding various API reasons
 c	net/minecraft/world/entity/EntityInsentient	net/minecraft/world/entity/Mob
 	m	(Lnet/minecraft/world/entity/EntityTypes;ZLorg/bukkit/event/entity/EntityTransformEvent$TransformReason;Lorg/bukkit/event/entity/CreatureSpawnEvent$SpawnReason;)Lnet/minecraft/world/entity/EntityInsentient;	a	convertTo
+
+# Craftbukkit changes the signature of methods in ComposterBlock
+c	net/minecraft/world/level/block/BlockComposter	net/minecraft/world/level/block/ComposterBlock
+	m	(Lnet/minecraft/world/level/block/state/IBlockData;Lnet/minecraft/world/level/World;Lnet/minecraft/core/BlockPosition;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/level/block/state/IBlockData;	d	extractProduce
+	m	(Lnet/minecraft/world/level/block/state/IBlockData;Lnet/minecraft/server/level/WorldServer;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/core/BlockPosition;Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/world/level/block/state/IBlockData;	a	insertItem
+	m	(Lnet/minecraft/world/level/block/state/IBlockData;Lnet/minecraft/world/level/GeneratorAccess;Lnet/minecraft/core/BlockPosition;Lnet/minecraft/world/item/ItemStack;D)Lnet/minecraft/world/level/block/state/IBlockData;	a	addItem

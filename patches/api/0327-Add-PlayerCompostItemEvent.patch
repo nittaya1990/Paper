@@ -4,42 +4,52 @@ Date: Sat, 7 Aug 2021 15:11:27 +0200
 Subject: [PATCH] Add PlayerCompostItemEvent.
 
 
-diff --git a/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java
+diff --git a/src/main/java/com/destroystokyo/paper/event/entity/CompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/CompostItemEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1195392aff2829eed6d987d1896b3fe453cafc53
+index 0000000000000000000000000000000000000000..b30d155d4936b300c4e50ae9ff246bce8bd8fe05
 --- /dev/null
-+++ b/src/main/java/com/destroystokyo/paper/event/player/PlayerCompostItemEvent.java
-@@ -0,0 +1,100 @@
-+package com.destroystokyo.paper.event.player;
++++ b/src/main/java/com/destroystokyo/paper/event/entity/CompostItemEvent.java
+@@ -0,0 +1,101 @@
++package com.destroystokyo.paper.event.entity;
 +
 +import org.bukkit.block.Block;
-+import org.bukkit.entity.Player;
++import org.bukkit.entity.Entity;
 +import org.bukkit.event.Cancellable;
 +import org.bukkit.event.HandlerList;
-+import org.bukkit.event.player.PlayerEvent;
++import org.bukkit.event.entity.EntityEvent;
 +import org.bukkit.inventory.ItemStack;
 +import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
 +
 +/**
-+ * Called when an item is about to be composted by a player.
++ * Called when an item is about to be composted by an entity or a hopper.
 + */
-+public class PlayerCompostItemEvent extends PlayerEvent implements Cancellable {
++public class CompostItemEvent extends EntityEvent implements Cancellable {
 +
 +    private static final HandlerList HANDLER_LIST = new HandlerList();
 +
 +    private Block composter;
 +    private ItemStack item;
 +    private boolean willRaiseLevel;
-+    private int level;
 +
 +    private boolean cancelled;
 +
-+    public PlayerCompostItemEvent(@NotNull Player who, @NotNull Block composter, @NotNull ItemStack item, boolean willRaiseLevel, int level) {
++    public CompostItemEvent(@Nullable Entity who, @NotNull Block composter, @NotNull ItemStack item, boolean willRaiseLevel) {
 +        super(who);
 +        this.composter = composter;
 +        this.item = item;
 +        this.willRaiseLevel = willRaiseLevel;
-+        this.level = level;
++    }
++
++    /**
++     * Gets the entity that is trying to compost the item, or null if a hopper is composting the item.
++     *
++     * @return the composting entity, or null if a hopper is composting the item
++     */
++    @Override
++    @Nullable
++    public Entity getEntity() {
++        return this.entity;
 +    }
 +
 +    /**
@@ -78,15 +88,6 @@ index 0000000000000000000000000000000000000000..1195392aff2829eed6d987d1896b3fe4
 +     */
 +    public void setWillRaiseLevel(boolean willRaiseLevel) {
 +        this.willRaiseLevel = willRaiseLevel;
-+    }
-+
-+    /**
-+     * Gets the current composter level.
-+     *
-+     * @return the composter level
-+     */
-+    public int getLevel() {
-+        return this.level;
 +    }
 +
 +    @Override

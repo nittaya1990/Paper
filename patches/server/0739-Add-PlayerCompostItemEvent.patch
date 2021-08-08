@@ -1,59 +1,119 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
-Date: Sat, 7 Aug 2021 15:11:33 +0200
+Date: Sun, 8 Aug 2021 19:56:02 +0200
 Subject: [PATCH] Add PlayerCompostItemEvent.
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-index 4c9ae6bdb2f0358798f84928271a2d783dcba7b4..109f17ec2928f01cef405b2235ef16d8946344f9 100644
+index 528e3c1dc9536408ad080d7f7097ea980bce3e21..01388e40bf0acd3884d587d2bcd17ddcc2bf2adc 100644
 --- a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-@@ -219,7 +219,19 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -219,7 +219,12 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
  
          if (i < 8 && ComposterBlock.COMPOSTABLES.containsKey(itemstack.getItem())) {
              if (i < 7 && !world.isClientSide) {
 -                BlockState iblockdata1 = ComposterBlock.addItem(state, (LevelAccessor) world, pos, itemstack);
 +                // Paper start
-+                float f = ComposterBlock.COMPOSTABLES.getFloat(itemstack.getItem());
-+                boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && world.getRandom().nextDouble() >= (double) f); // Paper - Logic moved  up.
-+
-+                org.bukkit.Location composterLocation = net.minecraft.server.MCUtil.toLocation(world, pos);
-+                com.destroystokyo.paper.event.player.PlayerCompostItemEvent event = new com.destroystokyo.paper.event.player.PlayerCompostItemEvent((org.bukkit.entity.Player) player.getBukkitEntity(), composterLocation.getBlock(), itemstack.getBukkitStack(), willRaiseLevel, i);
-+
-+                if (!event.callEvent())  {
++                BlockState iblockdata1 = ComposterBlock.addItem(state, (LevelAccessor) world, pos, itemstack, player);
++                if (iblockdata1 == null) {
 +                    return InteractionResult.PASS;
 +                }
-+
-+                BlockState iblockdata1 = ComposterBlock.addItem(state, (LevelAccessor) world, pos, itemstack, event.willRaiseLevel());
-+                // Paper end.
++                // Paper start
  
                  world.levelEvent(1500, pos, state != iblockdata1 ? 1 : 0);
                  player.awardStat(Stats.ITEM_USED.get(itemstack.getItem()));
-@@ -295,12 +307,25 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
-         return ComposterBlock.a(state, world, pos, item, world.getRandom().nextDouble());
+@@ -243,11 +248,16 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+         if (i < 7 && ComposterBlock.COMPOSTABLES.containsKey(itemstack.getItem())) {
+             // CraftBukkit start
+             double rand = worldserver.getRandom().nextDouble();
+-            BlockState iblockdata1 = ComposterBlock.addItem(iblockdata, DummyGeneratorAccess.INSTANCE, blockposition, itemstack, rand);
++            BlockState iblockdata1 = ComposterBlock.addItem(iblockdata, DummyGeneratorAccess.INSTANCE, blockposition, itemstack, rand, entity); // Paper
+             if (iblockdata == iblockdata1 || org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity, blockposition, iblockdata1).isCancelled()) {
+                 return iblockdata;
+             }
+-            iblockdata1 = ComposterBlock.addItem(iblockdata, (LevelAccessor) worldserver, blockposition, itemstack, rand);
++            // Paper start
++            iblockdata1 = ComposterBlock.addItem(iblockdata, (LevelAccessor) worldserver, blockposition, itemstack, rand, entity);
++            if (iblockdata1 == null) {
++                return iblockdata;
++            }
++            // Paper end
+             // CraftBukkit end
+ 
+             itemstack.shrink(1);
+@@ -291,16 +301,38 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
      }
  
-+    // Paper start
-+    static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item, boolean willRaiseLevel) {
-+        // CraftBukkit start
-+        return ComposterBlock.a(state, world, pos, item, willRaiseLevel);
+     static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item) {
+-        // CraftBukkit start
+-        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble());
++        // Paper start
++        return ComposterBlock.addItem(state, world, pos, item, null);
++    }
++    static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item, @Nullable Entity entity) {
++        // Paper end
++        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble(), entity);
+     }
+ 
+     static BlockState addItem(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, double rand) {
++        // Paper start
++        return ComposterBlock.addItem(iblockdata, generatoraccess, blockposition, itemstack, rand, null);
 +    }
 +
-     static BlockState a(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, double rand) {
--        // CraftBukkit end
++    static BlockState addItem(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, double rand, @Nullable Entity entity) {
++        // Paper end
+         // CraftBukkit end
          int i = (Integer) iblockdata.getValue(ComposterBlock.LEVEL);
          float f = ComposterBlock.COMPOSTABLES.getFloat(itemstack.getItem());
-+        boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && rand >= (double) f); // Paper - Logic moved  up.
-+        return ComposterBlock.a(iblockdata, generatoraccess, blockposition, itemstack, willRaiseLevel);
-+    }
-+
-+    static BlockState a(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, boolean willRaiselevel) {
-+        // Paper end
-+        // CraftBukkit end
-+        int i = (Integer) iblockdata.getValue(ComposterBlock.LEVEL);
  
 -        if ((i != 0 || f <= 0.0F) && rand >= (double) f) {
-+        if (!willRaiselevel) {
++        // Paper start
++        com.destroystokyo.paper.event.entity.CompostItemEvent event = null;
++        if (generatoraccess != org.bukkit.craftbukkit.util.DummyGeneratorAccess.INSTANCE) {
++            boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && rand >= (double) f); // taken from if conditional below
++            event = new com.destroystokyo.paper.event.entity.CompostItemEvent(entity == null ? null : entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(generatoraccess, blockposition), itemstack.getBukkitStack(), willRaiseLevel);
++        }
++
++        if (event != null && !event.callEvent()) {
++            return null;
++        }
++
++        if (event != null && !event.willRaiseLevel()) {
++            // Paper end
              return iblockdata;
          } else {
              int j = i + 1;
+@@ -407,6 +439,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+         private final LevelAccessor level;
+         private final BlockPos pos;
+         private boolean changed;
++        private BlockState composterState; // Paper
+ 
+         public InputContainer(BlockState state, LevelAccessor world, BlockPos pos) {
+             super(1);
+@@ -428,7 +461,8 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction dir) {
+-            return !this.changed && dir == Direction.UP && ComposterBlock.COMPOSTABLES.containsKey(stack.getItem());
++            this.composterState = ComposterBlock.addItem(this.state, this.level, this.pos, stack); // Paper
++            return !this.changed && dir == Direction.UP && ComposterBlock.COMPOSTABLES.containsKey(stack.getItem()) && this.composterState != null; // Paper
+         }
+ 
+         @Override
+@@ -442,9 +476,13 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+             if (!itemstack.isEmpty()) {
+                 this.changed = true;
+-                BlockState iblockdata = ComposterBlock.addItem(this.state, this.level, this.pos, itemstack);
++                // Paper start
++                if (this.composterState == null) {
++                    return;
++                }
+ 
+-                this.level.levelEvent(1500, this.pos, iblockdata != this.state ? 1 : 0);
++                this.level.levelEvent(1500, this.pos, this.composterState != this.state ? 1 : 0);
++                // Paper end
+                 this.removeItemNoUpdate(0);
+             }
+ 
