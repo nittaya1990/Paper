@@ -5,7 +5,7 @@ Subject: [PATCH] Add CompostItemEvent and EntityCompostItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-index 528e3c1dc9536408ad080d7f7097ea980bce3e21..2737a06e68b59764b241db6e5b063a38800f7336 100644
+index 528e3c1dc9536408ad080d7f7097ea980bce3e21..b9c8d99651bb8e077ea3de059ae955fad0798162 100644
 --- a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 @@ -219,7 +219,12 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
@@ -41,18 +41,14 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..2737a06e68b59764b241db6e5b063a38
              // CraftBukkit end
  
              itemstack.shrink(1);
-@@ -291,16 +301,42 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -294,13 +304,40 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+         // CraftBukkit start
+         return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble());
      }
- 
-     static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item) {
--        // CraftBukkit start
--        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble());
-+        return ComposterBlock.addItem(state, world, pos, item, null);
-+    }
 +    // Paper start
 +    static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item, @Nullable Entity entity) {
 +        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble(), entity);
-     }
++    }
 +    // Paper end
  
      static BlockState addItem(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, double rand) {
@@ -70,7 +66,7 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..2737a06e68b59764b241db6e5b063a38
 +        // Paper start
 +        com.destroystokyo.paper.event.block.CompostItemEvent event = null;
 +        if (generatoraccess != org.bukkit.craftbukkit.util.DummyGeneratorAccess.INSTANCE) {
-+            boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && rand >= (double) f); // taken from if conditional below
++            boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && rand >= (double) f);
 +            if (entity == null) {
 +                event = new com.destroystokyo.paper.event.block.CompostItemEvent(org.bukkit.craftbukkit.block.CraftBlock.at(generatoraccess, blockposition), itemstack.getBukkitStack(), willRaiseLevel);
 +            } else {
@@ -87,7 +83,7 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..2737a06e68b59764b241db6e5b063a38
              return iblockdata;
          } else {
              int j = i + 1;
-@@ -444,6 +480,11 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -444,6 +481,11 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
                  this.changed = true;
                  BlockState iblockdata = ComposterBlock.addItem(this.state, this.level, this.pos, itemstack);
  

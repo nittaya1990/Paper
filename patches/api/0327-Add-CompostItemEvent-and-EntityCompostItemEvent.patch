@@ -76,10 +76,10 @@ index 0000000000000000000000000000000000000000..5c16b8f2ee8536f25dc5e88f3efa9cf8
 +}
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a2de4f153c30a4997f7aee378b1886056cf0e5fc
+index 0000000000000000000000000000000000000000..e7354255410249d8b5594dcb0d0bca0480f1282d
 --- /dev/null
 +++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,43 @@
 +package com.destroystokyo.paper.event.entity;
 +
 +import com.destroystokyo.paper.event.block.CompostItemEvent;
@@ -95,7 +95,6 @@ index 0000000000000000000000000000000000000000..a2de4f153c30a4997f7aee378b188605
 +public class EntityCompostItemEvent extends CompostItemEvent implements Cancellable {
 +
 +    private Entity who;
-+
 +    private boolean cancelled;
 +
 +    public EntityCompostItemEvent(@NotNull Entity who, @NotNull Block composter, @NotNull ItemStack item, boolean willRaiseLevel) {
