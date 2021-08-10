@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
 Date: Sat, 7 Aug 2021 15:11:27 +0200
-Subject: [PATCH] Add CompostItemEvent.
+Subject: [PATCH] Add CompostItemEvent and EntityCompostItemEvent
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/event/block/CompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/block/CompostItemEvent.java
@@ -76,17 +76,16 @@ index 0000000000000000000000000000000000000000..5c16b8f2ee8536f25dc5e88f3efa9cf8
 +}
 diff --git a/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java b/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c6a742c2191c3fce4c56658d61686b67eb9307af
+index 0000000000000000000000000000000000000000..a2de4f153c30a4997f7aee378b1886056cf0e5fc
 --- /dev/null
 +++ b/src/main/java/com/destroystokyo/paper/event/entity/EntityCompostItemEvent.java
-@@ -0,0 +1,57 @@
+@@ -0,0 +1,44 @@
 +package com.destroystokyo.paper.event.entity;
 +
 +import com.destroystokyo.paper.event.block.CompostItemEvent;
 +import org.bukkit.block.Block;
 +import org.bukkit.entity.Entity;
 +import org.bukkit.event.Cancellable;
-+import org.bukkit.event.HandlerList;
 +import org.bukkit.inventory.ItemStack;
 +import org.jetbrains.annotations.NotNull;
 +
@@ -94,8 +93,6 @@ index 0000000000000000000000000000000000000000..c6a742c2191c3fce4c56658d61686b67
 + * Called when an item is about to be composted by an entity.
 + */
 +public class EntityCompostItemEvent extends CompostItemEvent implements Cancellable {
-+
-+    private static final HandlerList HANDLER_LIST = new HandlerList();
 +
 +    private Entity who;
 +
@@ -124,16 +121,6 @@ index 0000000000000000000000000000000000000000..c6a742c2191c3fce4c56658d61686b67
 +    @Override
 +    public void setCancelled(boolean cancel) {
 +        this.cancelled = cancel;
-+    }
-+
-+    @Override
-+    public @NotNull HandlerList getHandlers() {
-+        return HANDLER_LIST;
-+    }
-+
-+    @NotNull
-+    public static HandlerList getHandlerList() {
-+        return HANDLER_LIST;
 +    }
 +
 +}

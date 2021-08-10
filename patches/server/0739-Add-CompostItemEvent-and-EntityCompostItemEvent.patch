@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Noah van der Aa <ndvdaa@gmail.com>
 Date: Sun, 8 Aug 2021 19:56:02 +0200
-Subject: [PATCH] Add CompostItemEvent.
+Subject: [PATCH] Add CompostItemEvent and EntityCompostItemEvent
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-index 528e3c1dc9536408ad080d7f7097ea980bce3e21..cfca0a195db964484feac23091273efa53298728 100644
+index 528e3c1dc9536408ad080d7f7097ea980bce3e21..2737a06e68b59764b241db6e5b063a38800f7336 100644
 --- a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 @@ -219,7 +219,12 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
@@ -41,19 +41,19 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..cfca0a195db964484feac23091273efa
              // CraftBukkit end
  
              itemstack.shrink(1);
-@@ -291,16 +301,44 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -291,16 +301,42 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
      }
  
      static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item) {
 -        // CraftBukkit start
 -        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble());
-+        // Paper start
 +        return ComposterBlock.addItem(state, world, pos, item, null);
 +    }
++    // Paper start
 +    static BlockState addItem(BlockState state, LevelAccessor world, BlockPos pos, ItemStack item, @Nullable Entity entity) {
-+        // Paper end
 +        return ComposterBlock.addItem(state, world, pos, item, world.getRandom().nextDouble(), entity);
      }
++    // Paper end
  
      static BlockState addItem(BlockState iblockdata, LevelAccessor generatoraccess, BlockPos blockposition, ItemStack itemstack, double rand) {
 +        // Paper start
@@ -69,11 +69,9 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..cfca0a195db964484feac23091273efa
 -        if ((i != 0 || f <= 0.0F) && rand >= (double) f) {
 +        // Paper start
 +        com.destroystokyo.paper.event.block.CompostItemEvent event = null;
-+        com.destroystokyo.paper.event.entity.EntityCompostItemEvent entityEvent = null;
 +        if (generatoraccess != org.bukkit.craftbukkit.util.DummyGeneratorAccess.INSTANCE) {
 +            boolean willRaiseLevel = !((i != 0 || f <= 0.0F) && rand >= (double) f); // taken from if conditional below
 +            if (entity == null) {
-+                // Triggered by a hopper.
 +                event = new com.destroystokyo.paper.event.block.CompostItemEvent(org.bukkit.craftbukkit.block.CraftBlock.at(generatoraccess, blockposition), itemstack.getBukkitStack(), willRaiseLevel);
 +            } else {
 +                event = new com.destroystokyo.paper.event.entity.EntityCompostItemEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(generatoraccess, blockposition), itemstack.getBukkitStack(), willRaiseLevel);
@@ -89,7 +87,7 @@ index 528e3c1dc9536408ad080d7f7097ea980bce3e21..cfca0a195db964484feac23091273efa
              return iblockdata;
          } else {
              int j = i + 1;
-@@ -444,6 +482,11 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -444,6 +480,11 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
                  this.changed = true;
                  BlockState iblockdata = ComposterBlock.addItem(this.state, this.level, this.pos, itemstack);
  
