@@ -21,10 +21,10 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089d
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..794c3493f09b81c79a02a615d9bf4156f3cfc840 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..4025f156222ff09f3cb6d8c42aef5d9e0a0d845f 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3041,6 +3041,49 @@ public abstract class LivingEntity extends Entity {
+@@ -3041,6 +3041,53 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
@@ -32,8 +32,12 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..794c3493f09b81c79a02a615d9bf4156
 +            if (itemstack1.getTag() != null && this.level.paperConfig.hideItemmetaFromClients) {
 +                CompoundTag nbt = itemstack1.getTag();
 +                itemstack1.setCount(1);
-+                // Only show damage values for elytas.
-+                itemstack1.setDamageValue(itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1 ? itemstack1.getDamageValue() : 0);
++                // Only show damage values for elytras.
++                if (itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1) {
++                    itemstack1.setDamageValue(itemstack1.getDamageValue());
++                } else {
++                    itemstack1.setDamageValue(0);
++                }
 +
 +                // We can't just strip out display, leather helmets still use the display.color tag.
 +                if (nbt.get("display") instanceof CompoundTag displayTag) {
@@ -65,7 +69,7 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..794c3493f09b81c79a02a615d9bf4156
 +                    items.add(fakeItem);
 +                    nbt.put("items", items);
 +                } else {
-+                    // Shulker box.
++                    // No need to send the items inside.
 +                    nbt.remove("Items");
 +                }
 +            }
