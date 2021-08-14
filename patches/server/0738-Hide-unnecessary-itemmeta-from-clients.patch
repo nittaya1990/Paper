@@ -21,17 +21,17 @@ index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089d
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..4025f156222ff09f3cb6d8c42aef5d9e0a0d845f 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..6a86fd108f3a67e490083a6be50def01eed432ee 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3041,6 +3041,53 @@ public abstract class LivingEntity extends Entity {
+@@ -3041,6 +3041,50 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
 +            // Paper start - hide unnecessary itemmeta from clients.
 +            if (itemstack1.getTag() != null && this.level.paperConfig.hideItemmetaFromClients) {
 +                CompoundTag nbt = itemstack1.getTag();
-+                itemstack1.setCount(1);
++                itemstack1.setCount(itemstack1.getCount() > 1 ? 2 : 1);
 +                // Only show damage values for elytras.
 +                if (itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1) {
 +                    itemstack1.setDamageValue(itemstack1.getDamageValue());
@@ -63,11 +63,8 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..4025f156222ff09f3cb6d8c42aef5d9e
 +                    }
 +                    // Now we add a single fake item that uses the same amount of slots as all other items.
 +                    ListTag items = new ListTag();
-+                    CompoundTag fakeItem = new CompoundTag();
-+                    fakeItem.putInt("Count", sizeUsed);
-+                    fakeItem.putString("id", "minecraft:paper");
-+                    items.add(fakeItem);
-+                    nbt.put("items", items);
++                    items.add(new ItemStack(Items.PAPER, sizeUsed).save(new CompoundTag()));
++                    nbt.put("Items", items);
 +                } else {
 +                    // No need to send the items inside.
 +                    nbt.remove("Items");
