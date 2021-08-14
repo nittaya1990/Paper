@@ -5,30 +5,31 @@ Subject: [PATCH] Hide unnecessary itemmeta from clients.
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index c334f29c69c1e6e3fe55cd6695e7df400cf36058..2f3a66c1b652b059bfb3cf0b421dfe98c9f96204 100644
+index c334f29c69c1e6e3fe55cd6695e7df400cf36058..f6fed3b82f8c34988d0970815905821dac014c9b 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -863,6 +863,11 @@ public class PaperWorldConfig {
+@@ -863,6 +863,12 @@ public class PaperWorldConfig {
          behaviorTickRates = loadTickRates("behavior");
      }
  
 +    public boolean hideItemmetaFromClients = true;
 +    private void getHideItemmetaFromClients() {
 +        hideItemmetaFromClients = getBoolean("hide-itemmeta-from-clients", hideItemmetaFromClients);
++        set("hide-itemmeta-from-clients-readme", "When this setting is enabled, the server will not send information about items that may provide an unfair advantage to other players, such as enchantments, durability and the content of bundles and shulkers. Items will still appear as normal in your own inventory.");
 +    }
 +
      private Table<String, String, Integer> loadTickRates(String type) {
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..851fcd3bcfa88839c32e8d708c65279ad419a90f 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a638114059b7f2e7de076b3a88502cfffd0b7c47 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3035,12 +3035,81 @@ public abstract class LivingEntity extends Entity {
+@@ -3035,12 +3035,86 @@ public abstract class LivingEntity extends Entity {
  
      }
  
-+    private static final List<String> shownNBTTags = List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion"); // Paper
++    private static final List<String> shownNBTTags = List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion", "BlockStateTag"); // Paper
 +
      private void handleEquipmentChanges(Map<EquipmentSlot, ItemStack> equipment) {
          List<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(equipment.size());
@@ -68,11 +69,16 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..851fcd3bcfa88839c32e8d708c65279a
 +                    newNbt.put("Enchantments", enchantments);
 +                }
 +
-+                // Light levels for light blocks
-+                if (oldNbt.get("BlockStateTag") instanceof CompoundTag oldBlockState && oldBlockState.contains("level")) {
-+                    CompoundTag blockState = new CompoundTag();
-+                    blockState.put("level", oldBlockState.get("level"));
-+                    newNbt.put("BlockStateTag", blockState);
++                // Banner patterns for... banners (and shields).
++                if (oldNbt.get("BlockEntityTag") instanceof CompoundTag oldBlockEntity && (oldBlockEntity.contains("Base") || oldBlockEntity.contains("Patterns"))) {
++                    CompoundTag blockEntity = new CompoundTag();
++                    if (oldBlockEntity.contains("Base")) {
++                        blockEntity.put("Base", oldBlockEntity.get("Base"));
++                    }
++                    if (oldBlockEntity.contains("Patterns")) {
++                        blockEntity.put("Patterns", oldBlockEntity.get("Patterns"));
++                    }
++                    newNbt.put("BlockEntityTag", blockEntity);
 +                }
 +
 +                // Show broken elytras.
