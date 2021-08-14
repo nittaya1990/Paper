@@ -5,93 +5,55 @@ Subject: [PATCH] Hide unnecessary itemmeta from clients.
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-index c334f29c69c1e6e3fe55cd6695e7df400cf36058..f6fed3b82f8c34988d0970815905821dac014c9b 100644
+index c334f29c69c1e6e3fe55cd6695e7df400cf36058..edfd20abcabc9c2046fa419799ce089ddf2e0e5b 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperWorldConfig.java
-@@ -863,6 +863,12 @@ public class PaperWorldConfig {
+@@ -863,6 +863,11 @@ public class PaperWorldConfig {
          behaviorTickRates = loadTickRates("behavior");
      }
  
-+    public boolean hideItemmetaFromClients = true;
++    public boolean hideItemmetaFromClients = false;
 +    private void getHideItemmetaFromClients() {
 +        hideItemmetaFromClients = getBoolean("hide-itemmeta-from-clients", hideItemmetaFromClients);
-+        set("hide-itemmeta-from-clients-readme", "When this setting is enabled, the server will not send information about items that may provide an unfair advantage to other players, such as enchantments, durability and the content of bundles and shulkers. Items will still appear as normal in your own inventory.");
 +    }
 +
      private Table<String, String, Integer> loadTickRates(String type) {
          log("  " + type + ":");
          Table<String, String, Integer> table = HashBasedTable.create();
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a638114059b7f2e7de076b3a88502cfffd0b7c47 100644
+index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..794c3493f09b81c79a02a615d9bf4156f3cfc840 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3035,12 +3035,86 @@ public abstract class LivingEntity extends Entity {
- 
-     }
- 
-+    private static final List<String> shownNBTTags = List.of("CustomModelData", "SkullOwner", "CustomPotionColor", "Potion", "LodestoneTracked", "LodestoneDimension", "LodestonePos", "Charged", "ChargedProjectiles", "Explosion", "BlockStateTag"); // Paper
-+
-     private void handleEquipmentChanges(Map<EquipmentSlot, ItemStack> equipment) {
-         List<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayListWithCapacity(equipment.size());
- 
+@@ -3041,6 +3041,49 @@ public abstract class LivingEntity extends Entity {
          equipment.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
 +            // Paper start - hide unnecessary itemmeta from clients.
-+            if(itemstack1.getTag() != null && this.level.paperConfig.hideItemmetaFromClients) {
-+                CompoundTag oldNbt = itemstack1.getTag();
++            if (itemstack1.getTag() != null && this.level.paperConfig.hideItemmetaFromClients) {
++                CompoundTag nbt = itemstack1.getTag();
 +                itemstack1.setCount(1);
++                // Only show damage values for elytas.
++                itemstack1.setDamageValue(itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1 ? itemstack1.getDamageValue() : 0);
 +
-+                CompoundTag newNbt = new CompoundTag();
-+
-+                for (String tag : shownNBTTags) {
-+                    if (oldNbt.contains(tag)) {
-+                        newNbt.put(tag, oldNbt.get(tag));
-+                    }
++                // We can't just strip out display, leather helmets still use the display.color tag.
++                if (nbt.get("display") instanceof CompoundTag displayTag) {
++                    displayTag.remove("Lore");
++                    displayTag.remove("Name");
 +                }
 +
-+                // Colors for leather helmets and maps.
-+                if (oldNbt.get("display") instanceof CompoundTag oldDisplay && (oldDisplay.contains("color") || oldDisplay.contains("MapColor"))) {
-+                    CompoundTag display = new CompoundTag();
-+                    if (oldDisplay.contains("color")) {
-+                        display.put("color", oldDisplay.get("color"));
-+                    }
-+                    if (oldDisplay.contains("MapColor")) {
-+                        display.put("MapColor", oldDisplay.get("MapColor"));
-+                    }
-+                    newNbt.put("display", display);
-+                }
-+
-+                if (oldNbt.get("Enchantments") instanceof ListTag oldEnchantments && !oldEnchantments.isEmpty()) {
++                if (nbt.get("Enchantments") instanceof ListTag enchantmentsTag && !enchantmentsTag.isEmpty()) {
 +                    // The client still renders items with the enchantment glow if the enchantments tag contains at least one (empty) child.
 +                    ListTag enchantments = new ListTag();
 +                    enchantments.add(new CompoundTag());
-+                    newNbt.put("Enchantments", enchantments);
++                    nbt.put("Enchantments", enchantments);
 +                }
-+
-+                // Banner patterns for... banners (and shields).
-+                if (oldNbt.get("BlockEntityTag") instanceof CompoundTag oldBlockEntity && (oldBlockEntity.contains("Base") || oldBlockEntity.contains("Patterns"))) {
-+                    CompoundTag blockEntity = new CompoundTag();
-+                    if (oldBlockEntity.contains("Base")) {
-+                        blockEntity.put("Base", oldBlockEntity.get("Base"));
-+                    }
-+                    if (oldBlockEntity.contains("Patterns")) {
-+                        blockEntity.put("Patterns", oldBlockEntity.get("Patterns"));
-+                    }
-+                    newNbt.put("BlockEntityTag", blockEntity);
-+                }
-+
-+                // Show broken elytras.
-+                int damage = 0;
-+                if (itemstack1.is(Items.ELYTRA) && itemstack1.getDamageValue() >= itemstack1.getMaxDamage() - 1) {
-+                    damage = itemstack1.getDamageValue();
-+                }
++                nbt.remove("AttributeModifiers");
 +
 +                // Bundles change their texture based on their fullness.
-+                if (itemstack1.is(Items.BUNDLE) && oldNbt.get("Items") instanceof ListTag oldItems && !oldItems.isEmpty())  {
++                if (itemstack1.is(Items.BUNDLE) && nbt.get("Items") instanceof ListTag oldItems && !oldItems.isEmpty()) {
 +                    org.bukkit.inventory.meta.BundleMeta bundleMeta = (org.bukkit.inventory.meta.BundleMeta) itemstack1.asBukkitMirror().getItemMeta();
 +                    int sizeUsed = 0;
-+                    for (org.bukkit.inventory.ItemStack item : bundleMeta.getItems()){
++                    for (org.bukkit.inventory.ItemStack item : bundleMeta.getItems()) {
 +                        int scale = 64 / item.getMaxStackSize();
 +                        sizeUsed += scale * item.getAmount();
 +                    }
@@ -101,11 +63,11 @@ index 2b7eeb5659b1083ef550eb9feb0b7ba8a92a92e3..a638114059b7f2e7de076b3a88502cff
 +                    fakeItem.putInt("Count", sizeUsed);
 +                    fakeItem.putString("id", "minecraft:paper");
 +                    items.add(fakeItem);
-+                    newNbt.put("Items", items);
++                    nbt.put("items", items);
++                } else {
++                    // Shulker box.
++                    nbt.remove("Items");
 +                }
-+
-+                itemstack1.setTag(newNbt);
-+                itemstack1.setDamageValue(damage);
 +            }
 +            // Paper end.
 +
