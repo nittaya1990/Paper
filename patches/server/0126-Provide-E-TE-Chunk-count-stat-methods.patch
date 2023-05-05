@@ -7,24 +7,24 @@ Provides counts without the ineffeciency of using .getEntities().size()
 which creates copy of the collections.
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 98c205efbe7f31fb35eefedf083b366dd5dbb8f8..d6e6b5a29ddf980e179471059372dfda8e0d7b1b 100644
+index 1a0accca970ca5eb895c63c5a45a5261440d0e12..35eecb719a813fda6113da24a858188aef31466b 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -110,7 +110,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -117,7 +117,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      public static final int TICKS_PER_DAY = 24000;
      public static final int MAX_ENTITY_SPAWN_Y = 20000000;
      public static final int MIN_ENTITY_SPAWN_Y = -20000000;
 -    protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList();
 +    protected final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); public final int getTotalTileEntityTickers() { return this.blockEntityTickers.size(); } // Paper
+     protected final NeighborUpdater neighborUpdater;
      private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
      private boolean tickingBlockEntities;
-     public final Thread thread;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 8c47fbd10b634daf24eb14949b124ee87d87ff73..5575bf752c72a947e51f250d5edbadb1d77324c9 100644
+index 1684b3ee1b51597e799486bbe129b344a9fe3098..857fac09453f99a56d41a3a57a5f36c22496a643 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -132,6 +132,57 @@ public class CraftWorld extends CraftRegionAccessor implements World {
-     private int ambientSpawn = -1;
+@@ -152,6 +152,56 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+     private final CraftPersistentDataContainer persistentDataContainer = new CraftPersistentDataContainer(CraftWorld.DATA_TYPE_REGISTRY);
      private net.kyori.adventure.pointer.Pointers adventure$pointers; // Paper - implement pointers
  
 +    // Paper start - Provide fast information methods
@@ -42,9 +42,8 @@ index 8c47fbd10b634daf24eb14949b124ee87d87ff73..5575bf752c72a947e51f250d5edbadb1
 +    @Override
 +    public int getTileEntityCount() {
 +        // We don't use the full world tile entity list, so we must iterate chunks
-+        Long2ObjectLinkedOpenHashMap<ChunkHolder> chunks = world.getChunkSource().chunkMap.visibleChunkMap;
 +        int size = 0;
-+        for (ChunkHolder playerchunk : chunks.values()) {
++        for (ChunkHolder playerchunk : io.papermc.paper.chunk.system.ChunkSystem.getVisibleChunkHolders(this.world)) {
 +            net.minecraft.world.level.chunk.LevelChunk chunk = playerchunk.getTickingChunk();
 +            if (chunk == null) {
 +                continue;
@@ -63,7 +62,7 @@ index 8c47fbd10b634daf24eb14949b124ee87d87ff73..5575bf752c72a947e51f250d5edbadb1
 +    public int getChunkCount() {
 +        int ret = 0;
 +
-+        for (ChunkHolder chunkHolder : world.getChunkSource().chunkMap.visibleChunkMap.values()) {
++        for (ChunkHolder chunkHolder : io.papermc.paper.chunk.system.ChunkSystem.getVisibleChunkHolders(this.world)) {
 +            if (chunkHolder.getTickingChunk() != null) {
 +                ++ret;
 +            }

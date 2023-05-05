@@ -1,0 +1,124 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Zach Brown <zach.brown@destroystokyo.com>
+Date: Mon, 29 Feb 2016 19:54:32 -0600
+Subject: [PATCH] Graduate bungeecord chat API from spigot subclasses
+
+Change Javadoc to be accurate
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 07f092fa9edf11515b8c79ac8dca4f83905e9ff5..f05ff4bd1b41a957bb2f33ab5a88b4aeac9cebc4 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -379,6 +379,30 @@ public final class Bukkit {
+         return server.broadcastMessage(message);
+     }
+ 
++    // Paper start
++    /**
++     * Sends the component to all online players.
++     *
++     * @param component the component to send
++     * @deprecated use {@code sendMessage} methods on {@link #getServer()} that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Deprecated
++    public static void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
++        server.broadcast(component);
++    }
++
++    /**
++     * Sends an array of components as a single message to all online players.
++     *
++     * @param components the components to send
++     * @deprecated use {@code sendMessage} methods on {@link #getServer()} that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Deprecated
++    public static void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
++        server.broadcast(components);
++    }
++    // Paper end
++
+     /**
+      * Gets the name of the update folder. The update folder is used to safely
+      * update plugins at the right moment on a plugin load.
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 866559ab7cd3f351266fb41dce26a210a7702ff8..74e5f26c32e6e0c84c604b9704bfe672ee1915ef 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -312,6 +312,30 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     @Deprecated // Paper
+     public int broadcastMessage(@NotNull String message);
+ 
++    // Paper start
++    /**
++     * Sends the component to all online players.
++     *
++     * @param component the component to send
++     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Deprecated
++    public default void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
++        spigot().broadcast(component);
++    }
++
++    /**
++     * Sends an array of components as a single message to all online players.
++     *
++     * @param components the components to send
++     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Deprecated
++    public default void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
++        spigot().broadcast(components);
++    }
++    // Paper end
++
+     /**
+      * Gets the name of the update folder. The update folder is used to safely
+      * update plugins at the right moment on a plugin load.
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index f9875ea45251f51ff4ffef9f1a0d75ba652e4d1f..97d80bd49a3e76c265e45795d13d813125c521f9 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -847,6 +847,42 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     public void sendMap(@NotNull MapView map);
+ 
++    // Paper start
++    /**
++     * Sends the component to the player
++     *
++     * @param component the components to send
++     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Override
++    @Deprecated
++    public default void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent component) {
++        spigot().sendMessage(component);
++    }
++
++    /**
++     * Sends an array of components as a single message to the player
++     *
++     * @param components the components to send
++     * @deprecated use {@code sendMessage} methods that accept {@link net.kyori.adventure.text.Component}
++     */
++    @Override
++    @Deprecated
++    public default void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
++        spigot().sendMessage(components);
++    }
++
++    /**
++     * Sends an array of components as a single message to the specified screen position of this player
++     *
++     * @param position the screen position
++     * @param components the components to send
++     */
++    public default void sendMessage(net.md_5.bungee.api.ChatMessageType position, net.md_5.bungee.api.chat.BaseComponent... components) {
++        spigot().sendMessage(position, components);
++    }
++    // Paper end
++
+     /**
+      * Send a hurt animation. This fakes incoming damage towards the player from
+      * the given yaw relative to the player's direction.

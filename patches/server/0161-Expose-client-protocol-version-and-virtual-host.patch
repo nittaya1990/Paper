@@ -60,13 +60,13 @@ index 0000000000000000000000000000000000000000..a5a7624f1f372a26b982836cd31cff15
 +
 +}
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index b62e373445406ae84b37ec0570ebb1da02cff0b7..06e965996a5c50bce617847e594ae0dd83403484 100644
+index da13fd2cde9b54ab5bf87fbb4e90b5da47b6b8f2..07b2d28c5cba543b104ade6a180b0940a794e08c 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -83,6 +83,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     private float averageSentPackets;
-     private int tickCount;
-     private boolean handlingFault;
+@@ -114,6 +114,10 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         }
+     }
+     // Paper end - add pending task queue
 +    // Paper start - NetworkClient implementation
 +    public int protocolVersion;
 +    public java.net.InetSocketAddress virtualHost;
@@ -75,10 +75,10 @@ index b62e373445406ae84b37ec0570ebb1da02cff0b7..06e965996a5c50bce617847e594ae0dd
      public Connection(PacketFlow side) {
          this.receiving = side;
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index c4ba069f5124ec151e05813beddf293fddc3b804..484221e5a9c246aa91e0eacef3911b0e9ecff401 100644
+index 2be1bd39ee1341128f02e38afe5698b837735827..cca08b8c6e1e15f13326a2a7e33e7f3225ad894b 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -150,6 +150,10 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+@@ -157,6 +157,10 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
                  throw new UnsupportedOperationException("Invalid intention " + packet.getIntention());
          }
  
@@ -90,10 +90,10 @@ index c4ba069f5124ec151e05813beddf293fddc3b804..484221e5a9c246aa91e0eacef3911b0e
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4b1cd902bef456aac25ea00793c497d2b75bb181..8abce60db2bfd99aa5bb188dc231edcbde870e92 100644
+index 6a12f14f7433ee13605f8dd8b7e0e8d127b915bd..e08cc548950b3ff14a720da693edc45981a4e964 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -193,6 +193,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -303,6 +303,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  

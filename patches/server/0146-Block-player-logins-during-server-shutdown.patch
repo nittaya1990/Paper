@@ -5,12 +5,12 @@ Subject: [PATCH] Block player logins during server shutdown
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index a60b40d8cc802456374625af216c27998f8348b3..ab3409dd3a7671b46cba210cfa326311d10a7ef4 100644
+index 9fd44505c33b7ad578d6a471aca8e1c2df5c7dcd..bab2b06992800885dca42868186163a712ef9d73 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -69,6 +69,12 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener
-     }
+@@ -71,6 +71,12 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
  
+     @Override
      public void tick() {
 +        // Paper start - Do not allow logins while the server is shutting down
 +        if (!MinecraftServer.getServer().isRunning()) {

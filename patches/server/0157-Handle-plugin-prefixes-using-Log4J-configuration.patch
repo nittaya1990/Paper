@@ -15,20 +15,20 @@ This may cause additional prefixes to be disabled for plugins bypassing
 the plugin logger.
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index ee6257e1106794614b9d3ec4e9ee354f14f86e69..8738c5bf1de3a145723ba44fd4a41e944113752b 100644
+index 3e8f983cd7c69e9a95bcd863349adaf22be85128..2134a7d28cdf1a1b6ef50d4978e80e4411cf3c5a 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -26,7 +26,7 @@ dependencies {
+@@ -17,7 +17,7 @@ dependencies {
            all its classes to check if they are plugins.
            Scanning takes about 1-2 seconds so adding this speeds up the server start.
       */
 -    runtimeOnly("org.apache.logging.log4j:log4j-core:2.14.1")
 +    implementation("org.apache.logging.log4j:log4j-core:2.14.1") // Paper - implementation
      // Paper end
-     implementation("org.apache.logging.log4j:log4j-iostreams:2.14.1") // Paper
-     implementation("org.apache.logging.log4j:log4j-api:2.14.1") // Paper
+     implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper - remove exclusion
+     implementation("org.ow2.asm:asm:9.4")
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index f8a9d6a394f796634e4663ef4078a4c98447e13c..d73dfe72a54b621c0f944c90904df3e3bc709445 100644
+index 0a0aa6de31a94a701074cc5f43c94be7515a185c..489ce6f439778b26eb33ede9432681d4bf9e0116 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
 @@ -290,7 +290,7 @@ public class SpigotConfig

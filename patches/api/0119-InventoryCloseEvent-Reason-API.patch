@@ -7,10 +7,10 @@ Allows you to determine why an inventory was closed, enabling plugin developers
 to "confirm" things based on if it was player triggered close or not.
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index 5cc025b69c4f405be8f7098d0dcef40fa522b39f..1d573d33304e9c15a9949af68dab0626ae04dce4 100644
+index 12068d14af5731494a839b87b67ed3cc26bf8f36..3b184a66d1aebe4501fbdfd78ddf7a4ef5378f9f 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
-@@ -158,6 +158,15 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, InventoryHolder
+@@ -179,6 +179,15 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, InventoryHolder
       */
      public void closeInventory();
  

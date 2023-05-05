@@ -5,15 +5,15 @@ Subject: [PATCH] Ocelot despawns should honor nametags and leash
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
-index d3ce5cb3d78788cbb34d947495eafd24695f1ccb..06bf44ceb6f959a99f268fe1e1dca494985fbf4e 100644
+index 290a20bf54b3651c1c7cced04041a1aa1224bd01..f889e86bd6355ed72b85bf322d09ac2be4fb4954 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/Ocelot.java
 @@ -133,7 +133,7 @@ public class Ocelot extends Animal {
  
      @Override
      public boolean removeWhenFarAway(double distanceSquared) {
--        return !this.isTrusting() /*&& this.ticksLived > 2400*/; // CraftBukkit
-+        return !this.isTrusting() && !this.hasCustomName() && !this.isLeashed() /*&& this.ticksLived > 2400*/; // CraftBukkit // Paper - honor name and leash
+-        return !this.isTrusting() && this.tickCount > 2400;
++        return !this.isTrusting() && this.tickCount > 2400 && !this.hasCustomName() && !this.isLeashed(); // Paper - honor name and leash
      }
  
      public static AttributeSupplier.Builder createAttributes() {

@@ -5,7 +5,7 @@ Subject: [PATCH] Fix MC-117075: TE Unload Lag Spike
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index d6e6b5a29ddf980e179471059372dfda8e0d7b1b..62d7c9056c0836b53804e84cc1464cd50380d392 100644
+index 35eecb719a813fda6113da24a858188aef31466b..bc0b693b260368e1876bf3cc18a919acfaaf324d 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -728,6 +728,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -32,7 +32,7 @@ index d6e6b5a29ddf980e179471059372dfda8e0d7b1b..62d7c9056c0836b53804e84cc1464cd5
 -                this.blockEntityTickers.remove(this.tileTickPosition--);
 +                toRemove.add(tickingblockentity); // Paper - use removeAll
                  // Spigot end
-             } else {
+             } else if (this.shouldTickBlocksAt(tickingblockentity.getPos())) {
                  tickingblockentity.tick();
              }
          }

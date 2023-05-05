@@ -5,10 +5,10 @@ Subject: [PATCH] Add PlayerJumpEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 41f1b355a8a90216964e89432244a7d6929c9152..7759bf2afb9edeaca24726aace9358a8d5eafc64 100644
+index f42cf92eeb2c491a9bf75e67047c11edfc1185ab..b1b61ad583405459aff46a7b9964e927974f8a18 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1174,7 +1174,34 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Ser
+@@ -1288,7 +1288,34 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
                              boolean flag = d8 > 0.0D;
  
                              if (this.player.isOnGround() && !packet.isOnGround() && flag) {
@@ -37,10 +37,10 @@ index 41f1b355a8a90216964e89432244a7d6929c9152..7759bf2afb9edeaca24726aace9358a8
 +                                    this.player.jumpFromGround();
 +                                } else {
 +                                    from = event.getFrom();
-+                                    this.internalTeleport(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.emptySet(), false);
++                                    this.internalTeleport(from.getX(), from.getY(), from.getZ(), from.getYaw(), from.getPitch(), Collections.emptySet());
 +                                    return;
 +                                }
 +                                // Paper end
                              }
  
-                             this.player.move(MoverType.PLAYER, new Vec3(d7, d8, d9));
+                             boolean flag1 = this.player.verticalCollisionBelow;
